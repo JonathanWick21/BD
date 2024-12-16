@@ -9,10 +9,22 @@ create table FABRICANTE(
 create table ARTICULO(
     codigo CHAR(32),
     codFabricante INT,
-    peso decimal(,2),
-    categoria VARCHAR(16) CHECK ("primera"||"segunda"||"tercera"),
-    precioVenta decimal(,2),
-    precioCompra decimal(,2),
+    peso decimal(11,2),
+    categoria ENUM ('primera', 'segunda', 'tercera'),
+    precioVenta decimal(11,2),
+    precioCompra decimal(11,2),
     existencias INT UNSIGNED,
     PRIMARY KEY(codigo,codFabricante,peso,categoria)
-)
+);
+
+alter table FABRICANTE modify pais VARCHAR(32) DEFAULT 'España';
+
+alter table FABRICANTE add provincia VARCHAR(32) AFTER nombre;
+
+rename table ARTICULO to PRODUCTO;
+
+
+
+
+
+
