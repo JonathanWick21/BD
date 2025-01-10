@@ -19,25 +19,46 @@
     where customer_city = "Bronx";
 
 -- ¿Cuántos productos han pedido clientes que viven en el Bronx y su nombre empieza por M?
-    
+    select sum(oi.order_item_quaintity) as total_productos from customers c 
+    join orders on c.customers_id = o.order_customer_id
+    join order_items oi on o.order_id = oi.order_item_id
+    where c.customer_city ="Bronx" and customer_fname like 'M%';
 
 -- Recupera el nombre, email y ciudad de los clientes que tengan pedidos pendientes de pago.
-
+    select c.customers_fname, c.customers_email, c.customer_city from customers c
+    join orders o on c.customers_id = o.order_customer_id
+    where o.order_status = "PENDING_PAYMENT";
 
 -- Recupera el nombre de los departamentos que tengan pedidos pendientes de pago.
-
+    select distinct (d.department_name) from departments d
+    join categories c on department_id = c.category_department_id
+    join products p on c.category_id = p.product_category_id
+    join order_items ot on p.product_id = oi.order_item_product_id
+    join orders o on oi.order_items = o.order_id
+    where o.order_status = "PENDING_PAYMENT";
 
 -- Recupera el nombre de los departamentos que han vendido algún producto a un cliente que vive en Phoenix.
-
+    select distinct(d.department_name) from departaments d
+    join categories c on department_id = c.category_department_id
+    join products p on c.category_id = p.product_category_id
+    join order_items oi on p.product_id = oi.order_item_product_id
+    join customer cu on cu.customer_id = o.order_customer_id
+    where cu.customer_city = "Phoneix"
 
 
 -- Recupera todos los productos cuya categoría contenga la palabra Golf.
-
+    select p.product_id from products p
+    join categories c on p.product_category_id = c.category_id
+    where lower(c.category_name) like '%golf%'
 
 -- Para todos los elementos de pedido, comprueba si el valor del subtotal cuadra con el producto del precio por su cantidad.
 
-
 -- Recupera todos los clientes que no han hecho ningún pedido.
-
+select c.customer_id from customers c
+left join orders o on c.customers_id = o.order_customer_id
+where o.order_customer_id is null
 
 -- Recupera todas las categorías que no tienen productos (usando combinaciones externas)
+select category_id from categories c
+left join products p on c.categories_id = p.product_category_id
+where p.product_category_id is null
