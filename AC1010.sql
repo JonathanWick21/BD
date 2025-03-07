@@ -44,6 +44,11 @@ END;
 //
 DELIMITER ;
 
+CREATE EVENT evento_5min
+ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 MINUTE
+DO
+    INSERT INTO historico(fecha, descripcion) VALUES (NOW(), 'Evento ejecutado dentro de 1 minutos');
+
 
 -- El primer carácter del parámetro nombre (en minúsculas).
 -- Los cinco primeros caracteres del parámetro apellidos (en minúsculas).
