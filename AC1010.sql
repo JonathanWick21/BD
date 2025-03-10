@@ -35,20 +35,22 @@ INSERT INTO alumnado (nombre, apellidos, curso) VALUES
 -- Crea una función (crearEmail) que a partir de un nombre, apellidos y curso, genere una dirección de email y la devuelva como salida. El formato del email de salida es el siguiente:
 
 DELIMITER //
-CREATE OR REPLACE FUNCTION crearEmail(in _nom varchar(50), in _ape VARCHAR(50), in _curs VARCHAR(50), RETURN VARCHAR(160))
-Begin
-    declare email VARCHAR(160)
-    set email = CONCAT(LOWER(LEFT(_nom, 1)), LOWER(LEFT(_ape, 5)), LENGTH(_ape), "@", LOWER(_curs), "s8a.es.")
+CREATE OR REPLACE FUNCTION crearEmail(_nombre varchar(50), _apellidos VARCHAR(50), _curso VARCHAR(50)) RETURNS VARCHAR(160)
+begin
+    declare email VARCHAR(160);
+    set email = CONCAT(LOWER(LEFT(_nombre, 1)), LOWER(LEFT(_apellidos, 5)), LENGTH(_apellidos), "@", LOWER(_curso), "s8a.es");
     RETURN email;
 END;
 //
 DELIMITER ;
 
-CREATE EVENT evento_5min
-ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 MINUTE
-DO
-    INSERT INTO historico(fecha, descripcion) VALUES (NOW(), 'Evento ejecutado dentro de 1 minutos');
+SELECT crearEmail("Jonathan", "Villalba", "DAM");
 
+-- +-------------------------------------------+
+-- | crearEmail("Jonathan", "Villalba", "DAM") |
+-- +-------------------------------------------+
+-- | jvilla8@dams8a.es                         |
+-- +-------------------------------------------+
 
 -- El primer carácter del parámetro nombre (en minúsculas).
 -- Los cinco primeros caracteres del parámetro apellidos (en minúsculas).
@@ -59,3 +61,26 @@ DO
 -- Por ejemplo, si invocamos a la función con crearEmail('Aitor', 'Medrano', 'BD') devolvería amedra8@bd.s8a.es.
 
 -- Añade una columna email a la tabla alumnado. A continuación, crea un procedimiento (ac1010actualizarColumnaEmail) que permita crear un email para todo el alumnado que ya existe en la tabla alumnado, utilizando la función crearEmail.
+
+ALTER TABLE alumnado
+ADD COLUMN email VARCHAR(160);
+
+DELIMITER //
+CREATE OR REPLACE PROCEDURE ac1010actualizarColumnaEmail()
+begin
+    UPDATE alumnado set email = crearEmail(nombre, apellidos, curso);
+END;
+//
+DELIMITER ;
+
+CALL ac1010actualizarColumnaEmail();
+
+-- +----+----------+--------------------------+----------+-------------------------+
+-- | id | nombre   | apellidos                | curso    | email                   |
+-- +----+----------+--------------------------+----------+-------------------------+
+-- |  1 | Emilio   | Garcia                   | 1ºk DAM  | egarci6@1ºk dams8a.es   |
+-- |  2 | Sergio   | Llorente                 | 1ºK DAM  | sllore8@1ºk dams8a.es   |
+-- |  3 | Pablo    | Morillas                 | 1ºK DAM  | pmoril8@1ºk dams8a.es   |
+-- |  4 | Jonathan | Villalba Dios Destructor | 1ºK DAM  | jvilla24@1ºk dams8a.es  |
+-- |  5 | Diego    | Valencia                 | 1ºK DAM  | dvalen8@1ºk dams8a.es   |
+-- +----+----------+--------------------------+----------+-------------------------+
